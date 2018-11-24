@@ -258,6 +258,10 @@ void instructions(const string& inputFile){
     bool flag_text = false;
     //a label
     string label;
+    //a flag to label
+    bool flag_label;
+    //a flag to check if it is a vector
+    bool flag_vec;
 
     //start of reading the instructions
     while(line != ""){
