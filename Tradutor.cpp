@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <string>
 #include <cstdio>
+#include <bits/stdc++.h>
+#include <cstring>
 
 using namespace std;
 
@@ -251,7 +253,7 @@ void instructions(const string& inputFile){
     //the file variable to read the input file
     FILE* src = fopen(inputFile.c_str(), "r");
     //the file variable to write on the output file
-    FILE* dst = fopen(getFileName(inputFile).c_str(), "w");
+    FILE* dst = fopen(getFileName(inputFile).c_str(), "a");
     //each line of the file
     string line = "\n";
     //a flag to inficate that the program is in the section text
@@ -285,6 +287,8 @@ void instructions(const string& inputFile){
 
         //detected the section data
         if(line == "SECTION TEXT\n"){
+            fputs("section .text\n", dst);
+            fputs("mov ebx, 0\n", dst); //the acc
             flag_text = true;
             continue;
         }
@@ -293,7 +297,77 @@ void instructions(const string& inputFile){
         if(flag_text){
             //the add instruction
             if(line.find("ADD") != string::npos){
+                //the operand
+                string operand;
+                //the value of the vector
+                string vet;
+                //a position variable
+                size_t pos;
+                //a regular counter
+                unsigned int counter;
 
+                //check if there is a label
+                if(line.find(':') != string::npos){
+                    fputs(getLabel(line).c_str(), dst);
+                    fputs(": ", dst);
+                }
+
+                //get the position of the operand
+                for(counter = line.find("ADD") + 3; ; counter++){
+                    if((line[counter] != ' ') && (line[counter] != '\t')){
+                        pos = counter;
+                        break;
+                    }
+                }
+
+                //get the operand
+                for(counter = pos; ; counter++){
+                    if((line[counter] == ' ') || (line[counter] == '\t') || (line[counter] == '\n') || (line[counter] == '+')){
+                        break;
+                    }
+
+                    operand.push_back(line[counter]);
+                }
+
+                //check if exists a vector
+                if(line.find('+') != string::npos){
+                    flag_vec = true;
+
+                    //get the position of the vector
+                    for(counter = line.find('+') + 1; ; counter++){
+                        if((line[counter] != ' ') && (line[counter] != '\t')){
+                            pos = counter;
+                            break;
+                        }
+                    }
+
+                    //get the operand
+                    for(counter = pos; ; counter++){
+                        if((line[counter] == ' ') || (line[counter] == '\t') || (line[counter] == '\n') || (line[counter] == '+')){
+                            break;
+                        }
+
+                        vet.push_back(line[counter]);
+                    }
+
+                    vet = to_string(stoi(vet)*4);
+                }
+
+                //put this instruction on the file
+                fputs("add ebx, [", dst);
+                fputs(operand.c_str(), dst);
+
+                //if there is a vector
+                if(flag_vec){
+                    fputs("+", dst);
+                    fputs(vet.c_str(), dst);
+                }
+
+                fputs("]\n", dst);
+
+                flag_vec = false;
+
+                continue;
             }
 
             //the sub instruction
@@ -303,12 +377,158 @@ void instructions(const string& inputFile){
 
             //the mult instruction
             if(line.find("MULT") != string::npos){
+                //the operand
+                string operand;
+                //the value of the vector
+                string vet;
+                //a position variable
+                size_t pos;
+                //a regular counter
+                unsigned int counter;
 
+                //check if there is a label
+                if(line.find(':') != string::npos){
+                    fputs(getLabel(line).c_str(), dst);
+                    fputs(": ", dst);
+                }
+
+                //get the position of the operand
+                for(counter = line.find("MULT") + 4; ; counter++){
+                    if((line[counter] != ' ') && (line[counter] != '\t')){
+                        pos = counter;
+                        break;
+                    }
+                }
+                //get the operand
+                for(counter = pos; ; counter++){
+                    if((line[counter] == ' ') || (line[counter] == '\t') || (line[counter] == '\n') || (line[counter] == '+')){
+                        break;
+                    }
+
+                    operand.push_back(line[counter]);
+                }        
+
+                //check if exists a vector
+                if(line.find('+') != string::npos){
+                    flag_vec = true;
+
+                    //get the position of the vector
+                    for(counter = line.find('+') + 1; ; counter++){
+                        if((line[counter] != ' ') && (line[counter] != '\t')){
+                            pos = counter;
+                            break;
+                        }
+                    }
+
+                    //get the operand
+                    for(counter = pos; ; counter++){
+                        if((line[counter] == ' ') || (line[counter] == '\t') || (line[counter] == '\n') || (line[counter] == '+')){
+                            break;
+                        }
+
+                        vet.push_back(line[counter]);
+                    }
+
+                    vet = to_string(stoi(vet)*4);
+                }
+
+                fputs("push eax\n", dst);
+                fputs("mov eax, ebx\n", dst);
+                fputs("imul dword [", dst);
+                fputs(operand.c_str(), dst);
+
+                if(flag_vec){
+                    fputs("+", dst);
+                    fputs(vet.c_str(), dst);
+                }
+
+                fputs("]\n", dst);
+                fputs("mov ebx, eax\n", dst);
+                fputs("pop eax\n", dst);
+
+                flag_vec = false;
+
+                continue;
             }
 
             //the div instruction
             if(line.find("DIV") != string::npos){
+                //the operand
+                string operand;
+                //the value of the vector
+                string vet;
+                //a position variable
+                size_t pos;
+                //a regular counter
+                unsigned int counter;
 
+                //check if there is a label
+                if(line.find(':') != string::npos){
+                    fputs(getLabel(line).c_str(), dst);
+                    fputs(": ", dst);
+                }
+
+                //get the position of the operand
+                for(counter = line.find("DIV") + 3; ; counter++){
+                    if((line[counter] != ' ') && (line[counter] != '\t')){
+                        pos = counter;
+                        break;
+                    }
+                }
+
+                //get the operand
+                for(counter = pos; ; counter++){
+                    if((line[counter] == ' ') || (line[counter] == '\t') || (line[counter] == '\n') || (line[counter] == '+')){
+                        break;
+                    }
+
+                    operand.push_back(line[counter]);
+                }
+
+                //check if exists a vector
+                if(line.find('+') != string::npos){
+                    flag_vec = true;
+
+                    //get the position of the vector
+                    for(counter = line.find('+') + 1; ; counter++){
+                        if((line[counter] != ' ') && (line[counter] != '\t')){
+                            pos = counter;
+                            break;
+                        }
+                    }
+
+                    //get the operand
+                    for(counter = pos; ; counter++){
+                        if((line[counter] == ' ') || (line[counter] == '\t') || (line[counter] == '\n') || (line[counter] == '+')){
+                            break;
+                        }
+
+                        vet.push_back(line[counter]);
+                    }
+
+                    vet = to_string(stoi(vet)*4);
+                }
+
+                fputs("push eax\n", dst);
+                fputs("push edx\n", dst);
+                fputs("mov eax, ebx\n", dst);
+                fputs("cdq\n", dst);
+                fputs("idiv dword [", dst);
+                fputs(operand.c_str(), dst);
+
+                if(flag_vec){
+                    fputs("+", dst);
+                    fputs(vet.c_str(), dst);
+                }
+
+                fputs("]\n", dst);
+                fputs("mov ebx, eax\n", dst);
+                fputs("pop edx\n", dst);
+                fputs("pop eax\n", dst);
+
+                flag_vec = false;
+
+                continue;
             }
 
             //the jmp instruction
