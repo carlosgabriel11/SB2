@@ -108,7 +108,7 @@ string getConstValue(const string& line){
     }
 
     //get the const value
-    for(counter = pos; counter < line.size(); counter++){
+    for(counter = pos; counter < line.size() - 1; counter++){
         value.push_back(line[counter]);
     }
 
@@ -137,7 +137,7 @@ string getSpaceValue(const string& line){
     }
 
     //get the const value
-    for(counter = pos; counter < line.size(); counter++){
+    for(counter = pos; counter < line.size() - 1; counter++){
         value.push_back(line[counter]);
     }
 
@@ -158,6 +158,8 @@ void directiveData(const string& inputFile){
     bool flag_text = false;
     //a flag to indicate that the program is in the section bss
     bool flag_bss = false;
+    //general flag
+    bool flag = false;
     //a label
     string label;
 
@@ -171,6 +173,13 @@ void directiveData(const string& inputFile){
 
         //detected the section data
         if(line == "SECTION DATA\n"){
+            if(flag){
+                fputs("\n", dst);
+            }
+            else{
+                flag = true;
+            }
+
             fputs("section .data\n", dst);
             flag_text = false;
             flag_bss = false;
@@ -180,6 +189,12 @@ void directiveData(const string& inputFile){
         }
         //detected the section bss
         if(line == "SECTION BSS\n"){
+            if(flag){
+                fputs("\n", dst);
+            }
+            else{
+                flag = true;
+            }
             fputs("section .bss\n", dst);
             flag_data = false;
             flag_text = false;
@@ -221,6 +236,8 @@ void directiveData(const string& inputFile){
         }
 
     }
+
+    fputs("\n", dst);
 
     //close the files
     fclose(src);
