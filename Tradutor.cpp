@@ -8,6 +8,7 @@ using namespace std;
 //prototype of functions
 string getFileName(const string&);
 void directiveData(const string&);
+void instructions(const string&);
 
 //start of the main function
 int main(int argc, char** argv){
@@ -18,7 +19,8 @@ int main(int argc, char** argv){
         exit(1);
     }
 
-    directiveData("bin.asm");
+    directiveData(argv[1]);
+    instructions(argv[1]);
 
     return 0;
 }
@@ -240,6 +242,145 @@ void directiveData(const string& inputFile){
     fputs("\n", dst);
 
     //close the files
+    fclose(src);
+    fclose(dst);
+}
+
+//the function that converts the assembly into IA-32
+void instructions(const string& inputFile){
+    //the file variable to read the input file
+    FILE* src = fopen(inputFile.c_str(), "r");
+    //the file variable to write on the output file
+    FILE* dst = fopen(getFileName(inputFile).c_str(), "w");
+    //each line of the file
+    string line = "\n";
+    //a flag to inficate that the program is in the section text
+    bool flag_text = false;
+    //a label
+    string label;
+
+    //start of reading the instructions
+    while(line != ""){
+        line = getFileLine(src);
+
+        if(line == ""){
+            break;
+        }
+
+        //section data detected
+        if(line == "SECTION DATA\n"){
+            flag_text = false;
+            continue;
+        }
+
+        //section bss detected
+        if(line == "SECTION BSS\n"){
+            flag_text = false;
+            continue;
+        }
+
+        //detected the section data
+        if(line == "SECTION TEXT\n"){
+            flag_text = true;
+            continue;
+        }
+
+        //analyze the instructions
+        if(flag_text){
+            //the add instruction
+            if(line.find("ADD") != string::npos){
+
+            }
+
+            //the sub instruction
+            if(line.find("SUB") != string::npos){
+
+            }
+
+            //the mult instruction
+            if(line.find("MULT") != string::npos){
+
+            }
+
+            //the div instruction
+            if(line.find("DIV") != string::npos){
+
+            }
+
+            //the jmp instruction
+            if(line.find("JMP") != string::npos){
+
+            }
+
+            //the jmpn instruction
+            if(line.find("JMPN") != string::npos){
+
+            }
+
+            //the jmpp instruction
+            if(line.find("JMPP") != string::npos){
+
+            }
+
+            //the jmpz instruction
+            if(line.find("JMPZ") != string::npos){
+
+            }
+
+            //the copy instruction
+            if(line.find("COPY") != string::npos){
+
+            }
+
+            //the load instruction
+            if(line.find("LOAD") != string::npos){
+
+            }
+
+            //the store instruction
+            if(line.find("STORE") != string::npos){
+
+            }
+
+            //the input instruction
+            if(line.find("INPUT") != string::npos){
+
+            }
+
+            //the output instruction
+            if(line.find("OUTPUT") != string::npos){
+
+            }
+
+            //the c_input instruction
+            if(line.find("C_INPUT") != string::npos){
+
+            }
+
+            //the c_output instruction
+            if(line.find("C_OUTPUT") != string::npos){
+
+            }
+
+            //the s_input instruction
+            if(line.find("S_INPUT") != string::npos){
+
+            }
+
+            //the s_output instruction
+            if(line.find("S_OUTPUT") != string::npos){
+
+            }
+
+            //the stop instruction
+            if(line.find("STOP") != string::npos){
+
+            }
+        }
+    }
+
+
+    //closing the files
     fclose(src);
     fclose(dst);
 }
