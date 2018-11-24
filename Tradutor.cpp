@@ -372,7 +372,30 @@ void instructions(const string& inputFile){
 
             //the sub instruction
             if(line.find("SUB") != string::npos){
-
+                char aux1[50], aux2[50], aux3[50];
+                if(line.find(':')!=string::npos){
+                    fputs(getLabel(line).c_str(),dst);
+                    fputs(": ", dst);
+                    sscanf(line.c_str(), "%[^:] : %s %s", aux1, aux2, aux3);
+                }
+                else{
+                    sscanf(line.c_str(), "%s %s", aux2, aux3);
+                }
+                if(line.find('+')!=string::npos) flag_vec = true;
+                if(!flag_vec){
+                    fputs("sub ebx, [", dst);
+                    fputs(aux3, dst);
+                    fputs("]\n", dst);
+                }
+                 else{
+                    sscanf(aux3, "%[^+]+%s", aux2, aux3);
+                    fputs("sub ebx, [", dst);
+                    fputs(aux2, dst);
+                    fputs("+", dst);
+                    int i= stoi(aux3); i*=4; string(aux3) = to_string(i);
+                    fputs(aux3.c_str(), dst);
+                    fputs("]\n", dst);
+                }
             }
 
             //the mult instruction

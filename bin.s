@@ -21,4 +21,5 @@ mov eax, ebx
 imul dword [DOIS]
 mov ebx, eax
 pop eax
+sub ebx, [TMP_DATA]
 add ebx, [DOIS+8]
